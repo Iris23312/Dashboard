@@ -1,0 +1,112 @@
+[
+  {
+    "id": "balanced",
+    "title": "0.33_0.33_0.33",
+    "detail": true,
+    "group": "scip-weighted",
+    "lambdas": [0.3333333333333333, 0.3333333333333333, 0.3333333333],
+    "status": "timelimit",
+    "duration": 3600.01547,
+    "file": "balanced.json",
+    "nodes": 222225
+  },
+  {
+    "id": "weight-0.00_0.00_1.00",
+    "title": "0.00 \u00b7 0.00 \u00b7 1.00",
+    "detail": true,
+    "group": "scip-weighted",
+    "lambdas": [0, 0, 1],
+    "status": "optimal",
+    "duration": 0.285346,
+    "file": "weight-0.00_0.00_1.00.json",
+    "nodes": 1
+  },
+  {
+    "id": "weight-0.00_0.33_0.67",
+    "title": "0.00 \u00b7 0.33 \u00b7 0.67",
+    "detail": true,
+    "group": "scip-weighted",
+    "lambdas": [0, 0.3333333333333333, 0.6666666667],
+    "status": "timelimit",
+    "duration": 3600.003217,
+    "file": "weight-0.00_0.33_0.67.json",
+    "nodes": 190069
+  },
+  {
+    "id": "weight-0.00_0.67_0.33",
+    "title": "0.00 \u00b7 0.67 \u00b7 0.33",
+    "detail": true,
+    "group": "scip-weighted",
+    "lambdas": [0, 0.6666666666666666, 0.3333333333],
+    "status": "timelimit",
+    "duration": 3600.026796,
+    "file": "weight-0.00_0.67_0.33.json",
+    "nodes": 202525
+  },
+  {
+    "id": "weight-0.00_1.00_0.00",
+    "title": "0.00 \u00b7 1.00 \u00b7 0.00",
+    "detail": true,
+    "group": "scip-weighted",
+    "lambdas": [0, 1, 0],
+    "status": "timelimit",
+    "duration": 3600.018515,
+    "file": "weight-0.00_1.00_0.00.json",
+    "nodes": 201089
+  },
+  {
+    "id": "weight-0.33_0.00_0.67",
+    "title": "0.33 \u00b7 0.00 \u00b7 0.67",
+    "detail": true,
+    "group": "scip-weighted",
+    "lambdas": [0.3333333333333333, 0, 0.6666666667],
+    "status": "optimal",
+    "duration": 0.19698,
+    "file": "weight-0.33_0.00_0.67.json",
+    "nodes": 1
+  },
+  {
+    "id": "weight-0.33_0.67_0.00",
+    "title": "0.33 \u00b7 0.67 \u00b7 0.00",
+    "detail": true,
+    "group": "scip-weighted",
+    "lambdas": [0.3333333333333333, 0.6666666666666666, 0],
+    "status": "timelimit",
+    "duration": 3600.000675,
+    "file": "weight-0.33_0.67_0.00.json",
+    "nodes": 837295
+  },
+  {
+    "id": "weight-0.67_0.00_0.33",
+    "title": "0.67 \u00b7 0.00 \u00b7 0.33",
+    "detail": true,
+    "group": "scip-weighted",
+    "lambdas": [0.6666666666666666, 0, 0.3333333333],
+    "status": "gaplimit",
+    "duration": 2.453978,
+    "file": "weight-0.67_0.00_0.33.json",
+    "nodes": 1
+  },
+  {
+    "id": "weight-0.67_0.33_0.00",
+    "title": "0.67 \u00b7 0.33 \u00b7 0.00",
+    "detail": true,
+    "group": "scip-weighted",
+    "lambdas": [0.6666666666666666, 0.3333333333333333, 0],
+    "status": "timelimit",
+    "duration": 3600.022081,
+    "file": "weight-0.67_0.33_0.00.json",
+    "nodes": 285677
+  },
+  {
+    "id": "weight-1.00_0.00_0.00",
+    "title": "1.00 \u00b7 0.00 \u00b7 0.00",
+    "detail": true,
+    "group": "scip-weighted",
+    "lambdas": [1, 0, 0],
+    "status": "gaplimit",
+    "duration": 2.5520709999999998,
+    "file": "weight-1.00_0.00_0.00.json",
+    "nodes": 1
+  }
+]
