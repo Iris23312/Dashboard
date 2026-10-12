@@ -5,7 +5,7 @@
 Install Node.js 22.13 or newer. Open the extracted folder containing `package.json`:
 
 ```sh
-npm install
+npm ci
 npm run dev
 ```
 
