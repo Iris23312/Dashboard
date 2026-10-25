@@ -1,11 +1,11 @@
 import {
-  bestSelection,
+  optimalSelection,
   type Observation,
   type Role,
   type Run,
   type Selection,
 } from "./model";
-import { COLORS, viewingRoles } from "./appearance";
+import { COLORS, OPTIMAL_REFERENCE_LABEL, isOptimalTime, viewingRoles } from "./appearance";
 
 export const MIN_NOTICEABLE_DROP_PERCENT = 0.5;
 export type GapDrop = {
@@ -89,20 +89,14 @@ export function timelinePathRoles(
   preview: Selection | null = null,
 ): Role[] {
   return [
-    ...viewingRoles(run, current, preview),
+    ...viewingRoles(run, current, preview).filter((role) => !isOptimalTime(run, role.selection)),
     {
-      key: "best",
-      label: "Optimal",
-      color: COLORS.best,
-      selection: bestSelection(run),
+      key: "optimal",
+      label: OPTIMAL_REFERENCE_LABEL,
+      color: COLORS.optimal,
+      selection: optimalSelection(run),
     },
-    {
-      key: "final",
-      label: "Final",
-      color: COLORS.final,
-      selection: { t: run.finalResultTime },
-    },
-    ...nearbyGapDrops(run, current.t).map((drop, i): Role => ({
+    ...nearbyGapDrops(run, current.t).filter((drop) => !isOptimalTime(run, drop.selection)).map((drop, i): Role => ({
       key: i === 0 ? "drop-one" : "drop-two",
       label: `D${i + 1}`,
       color: i === 0 ? COLORS.drop : COLORS.dropSecond,

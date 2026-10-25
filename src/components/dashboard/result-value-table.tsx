@@ -29,13 +29,13 @@ export function ResultValueTable({
 }: Props) {
   const objective = rows.find((r) => r.key === "objective");
   const displayRows = [...rows];
-  if (objective?.solutionAt)
+  if (objective?.resultTimes)
     displayRows.splice(3, 0, {
-      key: "found",
-      label: "Result found",
+      key: "result-time",
+      label: "Result time",
       unit: "s",
       digits: 6,
-      values: objective.solutionAt,
+      values: objective.resultTimes,
     });
   const selected = roles.filter((r) => r.key !== optimal.key);
   const pairs = selected.map((role) => ({ first: role, second: optimal }));
@@ -79,7 +79,7 @@ export function ResultValueTable({
           <span
             title={
               role === optimal
-                ? `Best recorded result at ${fmt(role.selection.t, 6)} s; solver status: ${solverStatus ?? "Not recorded"}`
+                ? `Optimal reference: ${fmt(role.selection.t, 6)} s; solver status: ${solverStatus ?? "Not recorded"}. Final values and layout come from the final solver output.`
                 : `Exact time: ${fmt(role.selection.t, 6)} s`
             }
           >

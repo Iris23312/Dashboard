@@ -10,12 +10,8 @@
     "dev": "node server/index.mjs --dev",
     "build": "tsc --noEmit && vite build",
     "start": "node server/index.mjs",
-    "check": "node --experimental-strip-types scripts/verify-dashboard.mjs",
-    "check:server": "node scripts/verify-server.mjs",
-    "data:prepare": "node scripts/prepare-data.mjs",
-    "check:revision": "node scripts/verify-v61.mjs && node scripts/verify-v62.mjs && node scripts/verify-v63.mjs",
-    "check:ui": "node scripts/verify-ui.mjs",
-    "check:interaction": "node --experimental-strip-types scripts/verify-interaction.mjs"
+    "check": "npm run check:optimal-reference",
+    "check:optimal-reference": "node scripts/verify-optimal-reference.mjs"
   },
   "dependencies": {
     "d3": "7.9.0",

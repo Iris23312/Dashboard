@@ -6,10 +6,10 @@ import {
   Role,
   fmt,
   snapshot,
-  bestSelection,
+  optimalSelection,
 } from "@/lib/dashboard/model";
 import { useSize, COLORS } from "./chart-shared";
-import { viewingRoles } from "@/lib/dashboard/appearance";
+import { OPTIMAL_REFERENCE_LABEL, isOptimalTime, viewingRoles } from "@/lib/dashboard/appearance";
 import {
   nearbyGapDrops,
   MIN_NOTICEABLE_DROP_PERCENT,
@@ -59,30 +59,22 @@ export function GapChart({
       right = w - 28;
     const x = d3
       .scaleLinear()
-      .domain([0, run.finalResultTime > 0 ? run.finalResultTime : 1])
+      .domain([0, run.optimal.time_s > 0 ? run.optimal.time_s : 1])
       .range([left, right]);
     const selections = (roles ?? viewingRoles(run, current, viewed)).filter(
-      (r) => r.label !== "Optimal",
+      (r) => !isOptimalTime(run, r.selection),
     );
-    const optimal = bestSelection(run);
+    const optimal = optimalSelection(run);
     const events = [
       {
         key: "optimal",
         selection: optimal,
-        label: "Optimal",
-        color: COLORS.best,
+        label: OPTIMAL_REFERENCE_LABEL,
+        color: COLORS.optimal,
         symbol: d3.symbolDiamond,
-        detail: `Best recorded result: ${fmt(optimal.t, 6)} s. Solver status: ${run.meta.status}.`,
+        detail: `Optimal reference (final recorded time): ${fmt(optimal.t, 6)} s. Solver status: ${run.meta.status}. "Optimal" names the final reference; proof of optimality depends on solver status.`,
       },
-      {
-        key: "final",
-        selection: { t: run.finalResultTime } as Selection,
-        label: "Final",
-        color: COLORS.final,
-        symbol: d3.symbolSquare,
-        detail: `Final recorded run time: ${fmt(run.finalResultTime, 6)} s.`,
-      },
-      ...drops.map((d, i) => ({
+      ...drops.filter((drop) => !isOptimalTime(run, drop.selection)).map((d, i) => ({
         key: `drop-${i}`,
         selection: d.selection,
         label: `D${i + 1}`,
@@ -281,7 +273,7 @@ export function GapChart({
         const t = Math.max(
             0,
             Math.min(
-              run.finalResultTime,
+              run.optimal.time_s,
               x.invert(d3.pointer(e, svg.current)[0]),
             ),
           ),
@@ -295,7 +287,7 @@ export function GapChart({
           t: Math.max(
             0,
             Math.min(
-              run.finalResultTime,
+              run.optimal.time_s,
               x.invert(d3.pointer(e, svg.current)[0]),
             ),
           ),

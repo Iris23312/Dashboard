@@ -32,9 +32,8 @@ import {
   COLORS,
   viewingRoles,
   comparisonRoles,
-  isBaseTime,
 } from "@/lib/dashboard/appearance";
-import { INCLUDE_BEST_BASE } from "@/config";
+import { INCLUDE_OPTIMAL_REFERENCE } from "@/config";
 import {
   Run,
   Cell,
@@ -46,7 +45,6 @@ import {
   fmt,
   initialState,
   reducer,
-  bestSelection,
   denseLayout,
   combinedLayout,
   isComparisonPage,
@@ -121,7 +119,7 @@ export default function Dashboard() {
       };
       if (request !== serial.current) return;
       setRun(data);
-      dispatch({ type: "load", time: data.finalResultTime });
+      dispatch({ type: "load", time: data.optimal.time_s });
       setResultMap("map");
     } catch (e) {
       if (request === serial.current) setError(String(e));
@@ -152,7 +150,7 @@ export default function Dashboard() {
       if (!run || !Number.isFinite(s.t)) return;
       dispatch({
         type: "select",
-        selection: { ...s, t: Math.max(0, Math.min(run.finalResultTime, s.t)) },
+        selection: { ...s, t: Math.max(0, Math.min(run.optimal.time_s, s.t)) },
       });
       setPlaying(false);
     },
@@ -179,7 +177,7 @@ export default function Dashboard() {
       if (!run) return;
       setPlaying(false);
       const s = stateRef.current;
-      const entry = comparisonEntry(s, INCLUDE_BEST_BASE, selection);
+      const entry = comparisonEntry(s, INCLUDE_OPTIMAL_REFERENCE, selection);
       if (entry.action) {
         setCompareSeed(null);
         dispatch(entry.action);
@@ -208,19 +206,19 @@ export default function Dashboard() {
     const timer = window.setInterval(() => {
       const now = performance.now(),
         t = Math.min(
-          run.finalResultTime,
+          run.optimal.time_s,
           stateRef.current.current.t + ((now - previous) / 1000) * speed,
         );
       previous = now;
       dispatch({ type: "advance", t });
-      if (t >= run.finalResultTime) setPlaying(false);
+      if (t >= run.optimal.time_s) setPlaying(false);
     }, 250);
     return () => window.clearInterval(timer);
   }, [playing, speed, run]);
   const compareRoles = useMemo(
     () =>
       run
-        ? comparisonRoles(run, state.one, state.two, INCLUDE_BEST_BASE)
+        ? comparisonRoles(run, state.one, state.two, INCLUDE_OPTIMAL_REFERENCE)
         : NO_ROLES,
     [run, state.one, state.two],
   );
@@ -315,34 +313,7 @@ export default function Dashboard() {
   };
   const thumbnailCells =
     sharedLayout ?? resultLayouts.find((l) => l != null) ?? null;
-  const exitRoles: Role[] = [
-    ...(state.one
-      ? [
-          {
-            key: "one" as const,
-            label: "Selected 1",
-            selection: state.one,
-            color: isBaseTime(run, state.one) ? COLORS.best : COLORS.one,
-          },
-        ]
-      : []),
-    ...(state.two
-      ? [
-          {
-            key: "two" as const,
-            label: "Selected 2",
-            selection: state.two,
-            color: isBaseTime(run, state.two) ? COLORS.best : COLORS.two,
-          },
-        ]
-      : []),
-    {
-      key: "best",
-      label: "Optimal",
-      selection: bestSelection(run),
-      color: COLORS.best,
-    },
-  ];
+  const exitRoles = comparisonRoles(run, state.one, state.two, true);
   const compareActions = (
     <>
       <button
@@ -440,10 +411,10 @@ export default function Dashboard() {
               className="objective-value"
               title={
                 "Displayed solution objective value: " +
-                fmt(q.incumbent?.objective, 9)
+                fmt(q.result?.objective, 9)
               }
             >
-              {fmt(q.incumbent?.objective, collapsed ? 8 : 9)}
+              {fmt(q.result?.objective, collapsed ? 8 : 9)}
             </strong>
           </div>
         </section>
@@ -566,7 +537,7 @@ export default function Dashboard() {
                   type="range"
                   aria-label="Selected elapsed time"
                   min={0}
-                  max={run.finalResultTime}
+                  max={run.optimal.time_s}
                   step="any"
                   value={state.current.t}
                   onChange={(e) =>
@@ -584,7 +555,7 @@ export default function Dashboard() {
                         "ArrowLeft",
                         "ArrowRight",
                         "Home",
-                        "End",
+                        "Optimal",
                         "PageUp",
                         "PageDown",
                       ].includes(e.key)
@@ -602,7 +573,7 @@ export default function Dashboard() {
                         : undefined
                     }
                     onClick={() => {
-                      if (!playing && state.current.t >= run.finalResultTime)
+                      if (!playing && state.current.t >= run.optimal.time_s)
                         dispatch({ type: "select", selection: { t: 0 } });
                       setPlaying((v) => !v);
                     }}
@@ -637,7 +608,7 @@ export default function Dashboard() {
                       <input
                         type="number"
                         min={0}
-                        max={run.finalResultTime}
+                        max={run.optimal.time_s}
                         step="any"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
@@ -687,7 +658,7 @@ export default function Dashboard() {
                 run={run}
                 one={state.one}
                 two={state.two}
-                includeBase={INCLUDE_BEST_BASE}
+                includeBase={INCLUDE_OPTIMAL_REFERENCE}
                 onEdit={(role) => dispatch({ type: "edit", role })}
               />
             </SearchTree>
@@ -717,7 +688,7 @@ export default function Dashboard() {
             combined={sharedLayout}
             one={state.one}
             two={state.two}
-            includeBase={INCLUDE_BEST_BASE}
+            includeBase={INCLUDE_OPTIMAL_REFERENCE}
             onEdit={(role) =>
               dispatch({ type: "edit", role, returnTo: "compare-results" })
             }

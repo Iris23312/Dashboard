@@ -1,2 +1,2 @@
-// Three-option version: two selected times and the best recorded incumbent Base.
-export const INCLUDE_BEST_BASE = true;
+// Base version: selected historical times and the completed run endpoint.
+export const INCLUDE_OPTIMAL_REFERENCE = true;

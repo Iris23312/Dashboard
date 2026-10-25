@@ -40,7 +40,7 @@ export type ParameterRow = {
   digits: number;
   values: Record<string, number | null>;
   recordedAt?: Record<string, number | null>;
-  solutionAt?: Record<string, number | null>;
+  resultTimes?: Record<string, number | null>;
 };
 export function parameterRows(
   run: Run,
@@ -74,9 +74,9 @@ export function parameterRows(
   });
   const gap = row("gap", "Gap", 6, (s) => s.obs?.gap, "%", true);
   const objective: ParameterRow = {
-    ...row("objective", "Objective value", 9, (s) => s.incumbent?.objective),
-    solutionAt: Object.fromEntries(
-      roles.map((role, i) => [role.key, states[i].incumbent?.time_s ?? null]),
+    ...row("objective", "Objective value", 9, (s) => s.result?.objective),
+    resultTimes: Object.fromEntries(
+      roles.map((role, i) => [role.key, states[i].result?.time_s ?? null]),
     ),
   };
   const objectives = [
@@ -84,15 +84,15 @@ export function parameterRows(
       "f1",
       "F1",
       6,
-      (s) => (s.incumbent ? s.incumbent.F1 / 1e9 : null),
+      (s) => (s.result?.F1 == null ? null : s.result.F1 / 1e9),
       "10⁹",
     ),
-    row("f2", "F2", 6, (s) => s.incumbent?.F2),
+    row("f2", "F2", 6, (s) => s.result?.F2),
     row(
       "f3",
       "F3",
       6,
-      (s) => (s.incumbent ? s.incumbent.F3 / 1e6 : null),
+      (s) => (s.result?.F3 == null ? null : s.result.F3 / 1e6),
       "10⁶",
     ),
   ];
@@ -114,7 +114,7 @@ export function parameterRows(
     : [
         objective,
         gap,
-        row("cells", "Selected grids", 0, (s) => s.incumbent?.n_cells),
+        row("cells", "Selected grids", 0, (s) => s.result?.n_cells),
         ...objectives,
       ];
 }

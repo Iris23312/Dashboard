@@ -160,7 +160,7 @@ export function ParameterBars({
         </div>
       </div>
       <div className="parameter-chart-caption">
-        <span title="(Selected − Optimal) / |Optimal| × 100. Positive does not necessarily mean better.">
+        <span title="(Selected − Optimal value) / |Optimal value| × 100. Positive does not necessarily mean better.">
           Difference from Optimal (%)
         </span>
         <span>
@@ -260,9 +260,9 @@ export function ParameterBars({
                               : ""}
                         </dd>
                       )}
-                      {row.solutionAt?.[role.key] != null && (
+                      {row.resultTimes?.[role.key] != null && (
                         <dd className="record-time">
-                          Result found {fmt(row.solutionAt[role.key], 6)} s
+                          Result time {fmt(row.resultTimes[role.key], 6)} s
                         </dd>
                       )}
                       {row.recordedAt?.[role.key] != null && (

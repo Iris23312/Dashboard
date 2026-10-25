@@ -263,7 +263,7 @@ export function ResultValues({
   run: Run;
   selection: Selection;
 }) {
-  const i = snapshot(run, selection).incumbent;
+  const i = snapshot(run, selection).result;
   return (
     <Fields
       items={[

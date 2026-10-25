@@ -42,7 +42,7 @@ export function TimeSnapshot({
             "Global dual bound",
             q.obs?.dual == null ? "Not recorded" : fmt(q.obs.dual, 9),
           ],
-          ["Displayed solution found at", recordedTime(q.incumbent?.time_s)],
+          [q.isFinal ? "Final result at" : "Displayed solution found at", recordedTime(q.result?.time_s)],
           [
             "Highlighted path endpoint",
             q.nodeId == null ? "Not recorded" : "Node " + num(q.nodeId),

@@ -7,7 +7,7 @@ export type Cell = {
   b_w: number;
   latitude?: number;
   longitude?: number;
-  membership?: "one" | "two" | "best" | "selected" | "shared" | "neither";
+  membership?: "one" | "two" | "optimal" | "selected" | "shared" | "neither";
   members?: string[];
 };
 export type NodeRecord = {
@@ -56,6 +56,37 @@ export type Observation = {
   node_id: number | null;
   reportedGap?: number;
 };
+// Final state comes directly from the final layout and summary exports.
+// No incumbent index or discovery event defines this reference.
+export type OptimalReference = {
+  time_s: number;
+  node_id: number | null;
+  node_event_time_s: number | null;
+  bound_record_time_s: number | null;
+  primal_bound: number | null;
+  dual_bound: number | null;
+  gap_percent: number | null;
+  F1: number | null;
+  F2: number | null;
+  F3: number | null;
+  n_cells: number;
+  source: {
+    verified_raw: boolean;
+    summary_file: string;
+    layout_file: string;
+    [key: string]: unknown;
+  };
+};
+export type DisplayedResult = {
+  kind: "final" | "incumbent";
+  time_s: number;
+  objective: number | null;
+  F1: number | null;
+  F2: number | null;
+  F3: number | null;
+  n_cells: number;
+  sol_index: number | null;
+};
 export type Run = {
   id: string;
   title: string;
@@ -82,10 +113,8 @@ export type Run = {
     id: number;
     cells: Cell[];
   }[];
-  best: Incumbent;
+  optimal: OptimalReference;
   layout: Cell[];
-  layoutTime: number;
-  finalResultTime: number;
   notes: string[];
 };
 export type CatalogEntry = {
@@ -102,7 +131,7 @@ export type Selection = {
   nodeId?: number | null;
 };
 export type Role = {
-  key: "one" | "two" | "best" | "selected" | "final" | "drop-one" | "drop-two";
+  key: "one" | "two" | "optimal" | "selected" | "drop-one" | "drop-two";
   label: string;
   color: string;
   selection: Selection;
@@ -147,15 +176,22 @@ export function snapshot(run: Run, selection: Selection | number) {
     incumbent = atOrBefore(run.incumbents, s.t, (x) => x.time_s),
     event = atOrBefore(run.processing, s.t, (x) => x.t);
   const nodeId = s.nodeId !== undefined ? s.nodeId : (event?.node_id ?? null);
+  const isFinal = s.t >= run.optimal.time_s - 1e-9;
+  const result: DisplayedResult | null = isFinal
+    ? finalResult(run)
+    : incumbent ? { ...incumbent, kind: "incumbent" } : null;
   return {
     t: s.t,
     obs,
-    incumbent,
+    incumbent, // Historical context only; displayed results use result below.
+    result,
     event,
     nodeId,
     node: run.nodes.get(nodeId) ?? null,
-    isFinal: s.t >= run.finalResultTime - 1e-9,
-    hasLayout: incumbent != null,
+    isFinal,
+    hasLayout: isFinal
+      ? run.layout.length > 0
+      : incumbent != null && run.incumbentLayouts.some(l => l.id === incumbent.sol_index),
   };
 }
 export function ancestors(
@@ -210,8 +246,17 @@ export function pathRelations(paths: NodeRecord[][]) {
       pairwise.push({ i, j, ...comparePaths(paths[i], paths[j]) });
   return { sharedAll, exclusive, pairwise };
 }
-export function bestSelection(run: Run): Selection {
-  return { t: run.best.time_s, nodeId: run.best.node_id };
+// Optimal is the final recorded state, whose node belongs to its own event.
+export function optimalSelection(run: Run): Selection {
+  return { t: run.optimal.time_s, nodeId: run.optimal.node_id };
+}
+export function finalResult(run: Run): DisplayedResult {
+  const o = run.optimal;
+  return {
+    kind: "final", time_s: o.time_s, objective: o.primal_bound,
+    F1: o.F1, F2: o.F2, F3: o.F3, n_cells: o.n_cells,
+    sol_index: null,
+  };
 }
 export function nodeViewTime(node: NodeRecord) {
   return node.time_s ?? node.layout_time_s ?? node.first_seen_s;
@@ -260,6 +305,8 @@ export function denseLayout(
 ) {
   let source: Cell[] | undefined;
   if (kind === "incumbent") {
+    // Final output is independent of historical incumbent availability or identity.
+    if (t >= run.optimal.time_s - 1e-9) return run.layout;
     const i = atOrBefore(run.incumbents, t, (x) => x.time_s);
     source = i
       ? run.incumbentLayouts.find((l) => l.id === i.sol_index)?.cells
@@ -290,7 +337,7 @@ export function membershipLabel(value: Cell["membership"]) {
     ? "Selected 1 only"
     : value === "two"
       ? "Selected 2 only"
-      : value === "best"
+      : value === "optimal"
         ? "Optimal only"
         : value === "shared"
           ? "Shared by two or more results"

@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Run, Selection, fmt, Role } from "@/lib/dashboard/model";
-import { comparisonRoles } from "@/lib/dashboard/appearance";
+import { comparisonRoles, isOptimalTime } from "@/lib/dashboard/appearance";
 import { parameterRows } from "@/lib/dashboard/parameter-comparison";
 import { Grid2X2, Columns } from "../icons";
 import { ParameterBars } from "./parameter-bars";
@@ -37,7 +37,7 @@ export function ComparisonPanel({
     () => comparisonRoles(run, one, two, includeBase),
     [run, one, two, includeBase],
   );
-  const optimal = columns.find((c) => c.label === "Optimal")!;
+  const optimal = columns.find((c) => isOptimalTime(run, c.selection))!;
   const left = columns.find((c) => c.key === "one" && c !== optimal),
     right = columns.find((c) => c.key === "two" && c !== optimal);
   const rows = useMemo(
@@ -140,7 +140,7 @@ export function ComparisonPanel({
               ) : (
                 <span
                   className="identity-time"
-                  title={`Best recorded result at ${fmt(role.selection.t, 6)} s; solver status: ${run.meta.status}`}
+                  title={`Optimal reference: ${fmt(role.selection.t, 6)} s; values and layout from final solver output; solver status: ${run.meta.status}`}
                 >
                   {role.selection.t.toLocaleString("en-AU", {
                     maximumFractionDigits: 3,

@@ -1,0 +1,39 @@
+{
+  "label": "ws_lambda_0.67_0.33_0.00",
+  "objective": "ws",
+  "lambdas": [
+    0.6666666666666666,
+    0.3333333333333333,
+    0.0
+  ],
+  "objective_scale": "bounds/incumbents are on the minimised objective's own scale",
+  "status": "timelimit",
+  "mip_gap": 0.006358116501689369,
+  "primal_bound": 0.004297761287432256,
+  "dual_bound": 0.0032779099578086057,
+  "n_nodes_scip": 142853,
+  "n_nodes_recorded": 285677,
+  "n_nodes_processed": 142853,
+  "n_runs": 1,
+  "max_depth": 84,
+  "status_counts": {
+    "branched": 142838,
+    "open": 142824,
+    "pruned": 15
+  },
+  "n_node_layouts": 142838,
+  "n_incumbents": 4,
+  "layout_recording_s": 167.87180314119905,
+  "F1": 2068753820.4218194,
+  "F2": 4.945048309178743,
+  "F3": 2628000.0,
+  "solve_time_s": 3600.022081,
+  "wall_time_s": 3600.026590824127,
+  "mip_gap_setting": 0.0001,
+  "time_limit_s": 3600.0,
+  "node_limit": null,
+  "presolve": "off",
+  "scip_version": "10.0",
+  "node_semantics": "SCIP branch-and-bound with presolve disabled; branch_var/branch_sense/branch_bound is the decision that created the node from its parent.",
+  "layout_semantics": "node_layouts: the last optimal LP relaxation solved at each node (b_w may be fractional); incumbent_layouts: each new best integer solution. Cells with b_w <= 1e-06 are omitted (0)."
+}

@@ -1,5 +1,5 @@
 import {
-  bestSelection,
+  optimalSelection,
   type Cell,
   type Role,
   type Run,
@@ -14,14 +14,15 @@ export const COLORS = {
   current: "#7851b8",
   one: "#7851b8",
   two: "#b95412",
-  best: "#147d64",
-  final: "#be3348",
+  optimal: "#147d64",
   drop: "#236c98",
   dropSecond: "#5a7596",
   empty: "#e9edf1",
   capacity: "#7851b8",
 };
-// Overview keeps neutral labels: purple normally, green at the Optimal discovery time.
+export const OPTIMAL_REFERENCE_LABEL = "Optimal";
+
+// Green identifies the completed run endpoint, independently of solution discovery.
 export function viewingRoles(
   run: Run,
   current: Selection,
@@ -32,7 +33,7 @@ export function viewingRoles(
       key: "one",
       selection: current,
       label: "Selected time",
-      color: isBaseTime(run, current) ? COLORS.best : COLORS.current,
+      color: isOptimalTime(run, current) ? COLORS.optimal : COLORS.current,
     },
     ...(preview
       ? [
@@ -40,26 +41,26 @@ export function viewingRoles(
             key: "two" as const,
             selection: preview,
             label: "Preview time",
-            color: isBaseTime(run, preview) ? COLORS.best : COLORS.two,
+            color: isOptimalTime(run, preview) ? COLORS.optimal : COLORS.two,
           },
         ]
       : []),
   ];
 }
-export function isBaseTime(run: Run, selection: Selection) {
-  return Math.abs(selection.t - run.best.time_s) < 1e-9;
+export function isOptimalTime(run: Run, selection: Selection) {
+  return Math.abs(selection.t - run.optimal.time_s) < 1e-9;
 }
 export function roleFor(
   run: Run,
   key: Role["key"],
   selection: Selection,
 ): Role {
-  const base = isBaseTime(run, selection);
+  const base = isOptimalTime(run, selection);
   return {
     key,
-    selection: base ? bestSelection(run) : selection,
-    label: base ? "Optimal" : key === "two" ? "Selected 2" : "Selected 1",
-    color: base ? COLORS.best : key === "two" ? COLORS.two : COLORS.one,
+    selection: base ? optimalSelection(run) : selection,
+    label: base ? OPTIMAL_REFERENCE_LABEL : key === "two" ? "Selected 2" : "Selected 1",
+    color: base ? COLORS.optimal : key === "two" ? COLORS.two : COLORS.one,
   };
 }
 export function comparisonRoles(
@@ -70,10 +71,10 @@ export function comparisonRoles(
 ): Role[] {
   const roles: Role[] = [];
   if (one) roles.push(roleFor(run, "one", one));
-  if (two && !(one && isBaseTime(run, one) && isBaseTime(run, two)))
+  if (two && !(one && isOptimalTime(run, one) && isOptimalTime(run, two)))
     roles.push(roleFor(run, "two", two));
-  if (includeBase && !roles.some((r) => r.label === "Optimal"))
-    roles.push(roleFor(run, "best", bestSelection(run)));
+  if (includeBase && !roles.some((r) => isOptimalTime(run, r.selection)))
+    roles.push(roleFor(run, "optimal", optimalSelection(run)));
   return roles;
 }
 export function cellMembershipText(cell: Cell, roles: Role[]) {

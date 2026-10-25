@@ -3196,7 +3196,7 @@ button.root-node-button {
 .line-key.two {
   border-top-style: dashed;
 }
-.line-key.best {
+.line-key.optimal {
   border-top-style: dotted;
 }
 .glyph-key {
@@ -3388,7 +3388,7 @@ button.root-node-button {
   font-size: 12px;
   white-space: nowrap;
 }
-.comparison-slot.best-slot {
+.comparison-slot.optimal-slot {
   background: #f0f8f5;
 }
 .comparison-table-scroll {
