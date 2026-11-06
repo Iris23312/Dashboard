@@ -1,0 +1,14 @@
+{
+  "nodes": 2000001,
+  "edges": 2000000,
+  "root": "1",
+  "maxDepth": 344,
+  "missing_branch": 0,
+  "missing_incumbent": 1000001,
+  "events": 1000001,
+  "chart_points": 325,
+  "cells": 7406,
+  "selected_cells": 23,
+  "incumbents": 11,
+  "coordinate_cells": 7406
+}
