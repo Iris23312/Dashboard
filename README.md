@@ -2,16 +2,55 @@
 
 ## Run in VS Code
 
-Install Node.js 22.13 or newer. Open the extracted folder containing `package.json`:
+Install the following:
+
+- Node.js 22.13 or newer
+- Git
+- [Git LFS](https://git-lfs.com/)
+
+### Download the project and data
+
+Initialise Git LFS, then clone the `v2.0` branch:
+
+```sh
+git lfs install
+git clone --branch v2.0 https://github.com/Iris23312/Dashboard.git
+cd Dashboard
+git lfs pull
+```
+
+The dashboard uses large `.bin.gz` data files stored through Git LFS. Wait for the data download to finish before starting the application.
+
+If you have already cloned this branch, run `git lfs install` and `git lfs pull` inside the repository to retrieve the data.
+
+### Start the dashboard
+
+Open the `Dashboard` folder containing `package.json` in VS Code, then run:
 
 ```sh
 npm ci
 npm run dev
 ```
 
-Open **http://127.0.0.1:5173/**. Stop with Ctrl+C. If PowerShell blocks npm.ps1, use `npm.cmd` instead of `npm`.
+Open **http://127.0.0.1:5173/** in your browser. Stop the server with **Ctrl+C**.
 
-For production: `npm run build`, then `npm start`. To use a different port in PowerShell, set `$env:PORT="5174"` before starting. Run one variant at a time, or use different ports.
+### Production
+
+```sh
+npm run build
+npm start
+```
+
+To use a different port in PowerShell, set the port before starting:
+
+```powershell
+$env:PORT="5174"
+npm run dev
+```
+
+Then open **http://127.0.0.1:5174/**.
+
+Run one variant at a time, or use different ports.
 
 ## Two versions
 
